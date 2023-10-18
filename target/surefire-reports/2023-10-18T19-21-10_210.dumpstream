@@ -1,4 +1,4 @@
-# Created at 2023-10-18T19:11:51.130
+# Created at 2023-10-18T19:21:10.442
 Boot Manifest-JAR contains absolute paths in classpath 'D:\Maven\werewolf-api\target\test-classes'
 Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
 'other' has different root
