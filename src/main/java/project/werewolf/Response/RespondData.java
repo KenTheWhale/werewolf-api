@@ -25,4 +25,5 @@ public class RespondData {
     private boolean useSave;
     private boolean isSick;
     private boolean hasNightFunction;
+    private boolean wontBeCalledAtNight;
 }

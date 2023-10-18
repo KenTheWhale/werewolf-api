@@ -10,11 +10,12 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class RequestControllers {
+@RequestMapping("/player")
+public class PlayerControllers {
 
     private final PlayerService playerService;
 
-    @GetMapping("/get-player")
+    @GetMapping("/get")
     public ResponseEntity<List<RespondData>> getAllPlayer() throws Exception{
         return ResponseEntity.ok(playerService.getAllPlayers());
     }
@@ -39,9 +40,9 @@ public class RequestControllers {
         playerService.effect(Integer.parseInt(position));
     }
 
-    @PostMapping("uneffect/{position}")
-    public void uneffect(@PathVariable String position) throws Exception{
-        playerService.uneffect(Integer.parseInt(position));
+    @PostMapping("un-effect/{position}")
+    public void unEffect(@PathVariable String position) throws Exception{
+        playerService.unEffect(Integer.parseInt(position));
     }
 
     @PostMapping("hide/{position}")
@@ -49,9 +50,9 @@ public class RequestControllers {
         playerService.hide(Integer.parseInt(position));
     }
 
-    @PostMapping("unhide/{position}")
-    public void unhide(@PathVariable String position) throws Exception{
-        playerService.unhide(Integer.parseInt(position));
+    @PostMapping("un-hide/{position}")
+    public void unHide(@PathVariable String position) throws Exception{
+        playerService.unHide(Integer.parseInt(position));
     }
 
     @PostMapping("research/{position}")
@@ -69,14 +70,14 @@ public class RequestControllers {
         playerService.bitten(Integer.parseInt(position));
     }
 
-    @PostMapping("usedie/{position}")
-    public void usedie(@PathVariable String position) throws Exception{
-        playerService.usedie(Integer.parseInt(position));
+    @PostMapping("use-die/{position}")
+    public void useDie(@PathVariable String position) throws Exception{
+        playerService.useDie(Integer.parseInt(position));
     }
 
-    @PostMapping("usesave/{position}")
-    public void usesave(@PathVariable String position) throws Exception{
-        playerService.usesave(Integer.parseInt(position));
+    @PostMapping("use-save/{position}")
+    public void useSave(@PathVariable String position) throws Exception{
+        playerService.useSave(Integer.parseInt(position));
     }
 
     @PostMapping("sick/{position}")
@@ -84,9 +85,9 @@ public class RequestControllers {
         playerService.sick(Integer.parseInt(position));
     }
 
-    @PostMapping("unsick/{position}")
-    public void unsick(@PathVariable String position) throws Exception{
-        playerService.unsick(Integer.parseInt(position));
+    @PostMapping("un-sick/{position}")
+    public void unSick(@PathVariable String position) throws Exception{
+        playerService.unSick(Integer.parseInt(position));
     }
 
     @GetMapping("/get-night-function-role")
@@ -94,10 +95,9 @@ public class RequestControllers {
         return ResponseEntity.ok(playerService.getNightFunctionRole());
     }
 
-    @GetMapping("/reset-game")
-    public void resetGame() throws Exception {
-        playerService.resetGame();
+    @PostMapping("/set-night-called/{position}")
+    public void setCalledAtNight(@PathVariable String position) throws Exception{
+        playerService.setCalledAtNight(Integer.parseInt(position));
     }
-
 
 }

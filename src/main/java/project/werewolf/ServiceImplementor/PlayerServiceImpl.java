@@ -18,10 +18,12 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class PlayerServiceImpl implements PlayerService {
+
+    Logger logger = LoggerFactory.getLogger(PlayerServiceImpl.class);
     @Override
     public List<RespondData> getAllPlayers() throws Exception {
         Sheets sheetService = SheetUtils.getSheetService();
-        String range = "player_data!B2:N30";
+        String range = Constants.SHEET_NAME + "!" + Constants.START_POSITION + ":" + Constants.END_POSITION;
 
         ValueRange response = sheetService.spreadsheets().values()
                 .get(Constants.SPREADSHEET_ID, range)
@@ -50,6 +52,7 @@ public class PlayerServiceImpl implements PlayerService {
                                 .useSave(checkBoolean(row.get(10)))
                                 .isSick(checkBoolean(row.get(11)))
                                 .hasNightFunction(checkBoolean(row.get(12)))
+                                .wontBeCalledAtNight(checkBoolean(row.get(13)))
                                 .build()
                 );
                 position++;
@@ -79,7 +82,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public void uneffect(int position) throws Exception {
+    public void unEffect(int position) throws Exception {
         changeStatus(position, "E", "FALSE");
     }
 
@@ -89,7 +92,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public void unhide(int position) throws Exception {
+    public void unHide(int position) throws Exception {
         changeStatus(position, "G", "FALSE");
     }
 
@@ -109,12 +112,12 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public void usedie(int position) throws Exception {
+    public void useDie(int position) throws Exception {
         changeStatus(position, "K", "TRUE");
     }
 
     @Override
-    public void usesave(int position) throws Exception {
+    public void useSave(int position) throws Exception {
         changeStatus(position, "L", "TRUE");
     }
 
@@ -124,66 +127,26 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public void unsick(int position) throws Exception {
+    public void unSick(int position) throws Exception {
         changeStatus(position, "M", "FALSE");
     }
 
     @Override
     public List<RespondData> getNightFunctionRole() throws Exception {
-        Sheets sheetService = SheetUtils.getSheetService();
-        String range = "player_data!A2:N30";
-
-        ValueRange response = sheetService.spreadsheets().values()
-                .get(Constants.SPREADSHEET_ID, range)
-                .execute();
-
-        List<List<Object>> values = response.getValues();
-        List<RespondData> dataList = new ArrayList<>();
+        List<RespondData> dataList = getAllPlayers();
         List<RespondData> finalDataList = new ArrayList<>();
-        if (values != null && !values.isEmpty()) {
-            int position = 0;
-            for (List<Object> row : values) {
-                dataList.add(
-                        RespondData
-                                .builder()
-                                .position(position)
-                                .value(1)
-                                .name(row.get(1).toString())
-                                .role(row.get(2).toString())
-                                .isDead(checkBoolean(row.get(3)))
-                                .isEffected(checkBoolean(row.get(4)))
-                                .isCoupled(checkBoolean(row.get(5)))
-                                .isHidden(checkBoolean(row.get(6)))
-                                .isResearched(checkBoolean(row.get(7)))
-                                .isImmortal(checkBoolean(row.get(8)))
-                                .isBitten(checkBoolean(row.get(9)))
-                                .useDie(checkBoolean(row.get(10)))
-                                .useSave(checkBoolean(row.get(11)))
-                                .isSick(checkBoolean(row.get(12)))
-                                .hasNightFunction(checkBoolean(row.get(13)))
-                                .build()
-                );
-                position++;
-            }
-            for (RespondData line : dataList) {
-                if (line.isHasNightFunction()) {
-                    finalDataList.add(line);
-                }
+
+        for (RespondData line : dataList) {
+            if (line.isHasNightFunction()) {
+                finalDataList.add(line);
             }
         }
         return finalDataList;
     }
 
-    Logger logger = LoggerFactory.getLogger(PlayerServiceImpl.class);
-
     @Override
-    public void resetGame() throws Exception {
-        Sheets sheetService = SheetUtils.getSheetService();
-        for (int i = 0; i < getAllPlayers().size(); i++) {
-                changeStatus(i, "A", "");
-                changeStatus(i, "B", "");
-                changeStatus(i, "C", "");
-        }
+    public void setCalledAtNight(int position) throws Exception {
+        changeStatus(position, "O", "TRUE");
     }
 
     private boolean checkBoolean(Object input) {
@@ -202,11 +165,11 @@ public class PlayerServiceImpl implements PlayerService {
         Sheets sheetService = SheetUtils.getSheetService();
 
         ValueRange body = new ValueRange()
-                .setValues(Arrays.asList(Arrays.asList(newValue)));
+                .setValues(Arrays.asList(Arrays.asList("=IF(B2 = \"\";\"\";" + newValue + "())")));
 
-        UpdateValuesResponse result = sheetService.spreadsheets().values()
+        sheetService.spreadsheets().values()
                 .update(Constants.SPREADSHEET_ID, columnName + (position + 2), body)
-                .setValueInputOption("RAW")
+                .setValueInputOption("USER_ENTERED")
                 .execute();
     }
 }

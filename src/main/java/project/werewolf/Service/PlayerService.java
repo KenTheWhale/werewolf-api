@@ -23,19 +23,19 @@ public interface PlayerService {
 
     void bitten(int position) throws Exception;
 
-    void usedie(int position) throws Exception;
+    void useDie(int position) throws Exception;
 
-    void usesave(int position) throws Exception;
+    void useSave(int position) throws Exception;
 
     void sick(int position) throws Exception;
 
     List<RespondData> getNightFunctionRole() throws Exception;
 
-    void uneffect(int position) throws Exception;
+    void unEffect(int position) throws Exception;
 
-    void unhide(int position) throws Exception;
+    void unHide(int position) throws Exception;
 
-    void unsick(int position) throws Exception;
+    void unSick(int position) throws Exception;
 
-    void resetGame() throws Exception;
+    void setCalledAtNight(int position) throws Exception;
 }
