@@ -15,9 +15,9 @@ public class PlayerControllers {
 
     private final PlayerService playerService;
 
-    @GetMapping("/get")
-    public ResponseEntity<List<RespondData>> getAllPlayer() throws Exception{
-        return ResponseEntity.ok(playerService.getAllPlayers());
+    @GetMapping("/get/{beginValue}")
+    public ResponseEntity<List<RespondData>> getAllPlayer(@PathVariable String beginValue) throws Exception{
+        return ResponseEntity.ok(playerService.getAllPlayers(Integer.parseInt(beginValue)));
     }
 
     @PostMapping("/kill/{position}")

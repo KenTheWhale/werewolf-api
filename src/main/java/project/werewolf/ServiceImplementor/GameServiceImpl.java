@@ -49,7 +49,7 @@ public class GameServiceImpl implements GameService {
                                 .useSave(checkBoolean(row.get(10)))
                                 .isSick(checkBoolean(row.get(11)))
                                 .hasNightFunction(checkBoolean(row.get(12)))
-                                .wontBeCalledAtNight(checkBoolean(row.get(13)))
+                                .oneTimeFunction(checkBoolean(row.get(13)))
                                 .build()
                 );
                 position++;
@@ -62,13 +62,14 @@ public class GameServiceImpl implements GameService {
     public void resetGame() throws Exception {
         for (int i = 0; i < getAllPlayers().size(); i++) {
             char title = 'A';
-            for (int j = 0; j < 3; j++){
+            for (int j = 0; j < 3; j++) {
                 changeStatusBegin(i, Character.toString(title + j));
             }
 
-            title = 'A';
-            for (int k = 3; k < RespondData.class.getDeclaredFields().length - 1; k++){
-                changeStatus(i, Character.toString(title + k), "FALSE");
+            for (int k = 3; k < RespondData.class.getDeclaredFields().length - 1; k++) {
+                if (!(title + k == 'N' || title + k == 'O')){
+                    changeStatus(i, Character.toString(title + k), "FALSE");
+                }
 
             }
         }
@@ -98,7 +99,7 @@ public class GameServiceImpl implements GameService {
 
         sheetService.spreadsheets().values()
                 .update(Constants.SPREADSHEET_ID, columnName + (position + 2), body)
-                .setValueInputOption("USER_ENTERED")
+                .setValueInputOption("RAW")
                 .execute();
     }
 }

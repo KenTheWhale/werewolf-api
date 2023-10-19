@@ -5,7 +5,7 @@ import project.werewolf.Response.RespondData;
 import java.util.List;
 
 public interface PlayerService {
-    List<RespondData> getAllPlayers() throws Exception;
+    List<RespondData> getAllPlayers(int beginValue) throws Exception;
 
     void kill(int position) throws Exception;
 

@@ -20,8 +20,12 @@ import java.util.List;
 public class PlayerServiceImpl implements PlayerService {
 
     Logger logger = LoggerFactory.getLogger(PlayerServiceImpl.class);
+
     @Override
-    public List<RespondData> getAllPlayers() throws Exception {
+    public List<RespondData> getAllPlayers(int beginValue) throws Exception {
+        if (beginValue == 1) {
+            insertData();
+        }
         Sheets sheetService = SheetUtils.getSheetService();
         String range = Constants.SHEET_NAME + "!" + Constants.START_POSITION + ":" + Constants.END_POSITION;
 
@@ -52,13 +56,42 @@ public class PlayerServiceImpl implements PlayerService {
                                 .useSave(checkBoolean(row.get(10)))
                                 .isSick(checkBoolean(row.get(11)))
                                 .hasNightFunction(checkBoolean(row.get(12)))
-                                .wontBeCalledAtNight(checkBoolean(row.get(13)))
+                                .oneTimeFunction(checkBoolean(row.get(13)))
                                 .build()
                 );
                 position++;
             }
         }
         return dataList;
+    }
+
+    private void insertData() throws Exception {
+        Sheets sheetService = SheetUtils.getSheetService();
+        String range = Constants.SHEET_NAME_BEGIN + "!" + Constants.START_POSITION_BEGIN + ":" + Constants.END_POSITION_BEGIN;
+
+        ValueRange response = sheetService.spreadsheets().values()
+                .get(Constants.SPREADSHEET_ID, range)
+                .execute();
+
+        List<List<Object>> values = response.getValues();
+        List<String> dataList = new ArrayList<>();
+        if (values != null && !values.isEmpty()) {
+            for (List<Object> row : values) {
+                dataList.add(
+                        row.get(0).toString()
+                                + "#"
+                                + row.get(1).toString()
+                );
+            }
+        }
+
+        int position = 0;
+        for (int i = 0; i < dataList.size(); i++) {
+            String[] arr = dataList.get(i).split("#");
+            changeStatusBegin(position, "A", arr[0]);
+            changeStatusBegin(position, "B", arr[1]);
+            position++;
+        }
     }
 
     @Override
@@ -133,7 +166,7 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public List<RespondData> getNightFunctionRole() throws Exception {
-        List<RespondData> dataList = getAllPlayers();
+        List<RespondData> dataList = getAllPlayers(0);
         List<RespondData> finalDataList = new ArrayList<>();
 
         for (RespondData line : dataList) {
@@ -172,4 +205,21 @@ public class PlayerServiceImpl implements PlayerService {
                 .setValueInputOption("USER_ENTERED")
                 .execute();
     }
+
+    private void changeStatusBegin(int position, String columnName, Object newValue) throws Exception {
+        Sheets sheetService = SheetUtils.getSheetService();
+
+        ValueRange body = new ValueRange()
+                .setValues(Arrays.asList(Arrays.asList(newValue)));
+
+        Logger log = LoggerFactory.getLogger(PlayerServiceImpl.class);
+        log.info("Column: " + columnName + (position + 2));
+
+        sheetService.spreadsheets().values()
+                .update(Constants.SPREADSHEET_ID, Constants.SHEET_NAME + "!" + columnName + (position + 2), body)
+                .setValueInputOption("RAW")
+                .execute();
+    }
+
+
 }
